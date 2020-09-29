@@ -1,18 +1,20 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <app-goban></app-goban>
+    <app-controls></app-controls>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import Controls from '@/components/Controls.vue';
+import Goban from '@/components/Goban.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld,
-  },
+    'app-goban': Goban,
+    'app-controls': Controls
+  }
 };
 </script>
 
