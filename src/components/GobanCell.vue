@@ -1,6 +1,6 @@
 <template>
   <div :class="classes" @click="placeStone">
-    <div v-if="stone" :class="stoneClasses"></div>
+    <div v-if="stone && (!blind || last)" :class="stoneClasses"></div>
     <div
       v-else
       class="preview"
@@ -24,7 +24,8 @@ export default {
     cell: Number,
     stone: String,
     move: Boolean,
-    last: Boolean
+    last: Boolean,
+    blind: Boolean
   },
   data() {
     return {
@@ -47,7 +48,7 @@ export default {
   },
   computed: {
     stoneClasses() {
-      const lastClass = this.last ? 'last' : '';
+      const lastClass = this.last && !this.blind ? 'last' : '';
       return ['stone', this.stone, lastClass];
     }
   },

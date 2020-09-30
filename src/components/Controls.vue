@@ -1,11 +1,11 @@
 <template>
   <div class="col col-12 col-lg-5">
-    <p class="text-center">
+    <p class="text-center h5">
       Пленники: <span aria-label="белых">⚫</span>{{ captives.black }}
       <span aria-label="черных">⚪</span>{{ captives.white }}
     </p>
     <div class="my-2 controls">
-      <b-button-toolbar class="d-flex justify-content-center" aria-label="Меню гобана">
+      <b-button-toolbar class="d-flex justify-content-start" aria-label="Меню гобана">
         <b-button class="m-1" variant="info" @click="newGame">Новая игра</b-button>
         <b-button class="m-1" variant="info" @click="revert">Вернуть ход</b-button>
         <b-dropdown class="m-1" variant="info" right text="Выбрать пресет">
@@ -13,16 +13,25 @@
           <b-dropdown-item @click="preset('corner')">Выживание в углу</b-dropdown-item>
           <b-dropdown-item @click="preset('full')">Выживание по всей доске</b-dropdown-item>
           <b-dropdown-item @click="preset('center')">Выживание в центре</b-dropdown-item>
+          <b-dropdown-item @click="preset('colorless')">Одноцветное го</b-dropdown-item>
         </b-dropdown>
         <b-form-checkbox
-          class="m-2 d-none d-md-block"
+          class="m-1 d-none d-md-block"
           v-model="showCoords"
           @change="toggleCoords"
           name="check-button"
           size="lg"
-          button-variant="info"
           switch>
           Показывать координаты
+        </b-form-checkbox>
+        <b-form-checkbox
+          class="m-1 d-none d-md-block"
+          v-model="isBlind"
+          @change="toggleBlind"
+          name="check-button"
+          size="lg"
+          switch>
+          Игра вслепую
         </b-form-checkbox>
       </b-button-toolbar>
     </div>
@@ -37,6 +46,7 @@ export default {
   data() {
     return {
       showCoords: true,
+      isBlind: false,
       captives: {
         black: 0,
         white: 0,
@@ -77,6 +87,9 @@ export default {
     },
     toggleCoords() {
       eventBus.$emit('toggle-coords');
+    },
+    toggleBlind() {
+      eventBus.$emit('toggle-blind');
     }
   },
   created() {

@@ -14,6 +14,7 @@
             :move="isBlacksMove"
             :row="row"
             :cell="cell"
+            :blind="blind"
             :stone="hasStone(row, cell)"
             :last="hasStone(row, cell) && isLastMove(row, cell)"
             :key="row + cell"
@@ -44,6 +45,8 @@ export default {
     return {
       publicPath: process.env.BASE_URL,
       showCoords: true,
+      colorless: false,
+      blind: false,
       isBlacksMove: true,
       black: [],
       white: [],
@@ -64,6 +67,7 @@ export default {
       eventBus.$emit('captives-change', 'black', this.captives.black);
       eventBus.$emit('captives-change', 'white', this.captives.white);
       this.isBlacksMove = true;
+      this.colorless = false;
       this.currentGroup = [];
       this.log = [];
     },
@@ -118,7 +122,7 @@ export default {
         return 'white';
       }
       if (this.hasBlackStone(row, cell)) {
-        return 'black';
+        return this.colorless ? 'white' : 'black';
       }
       if (row > 19 || row < 1 || cell > 19 || cell < 1) {
         return 'edge';
@@ -220,6 +224,9 @@ export default {
           this.white = [];
           this.isBlacksMove = false;
           break;
+        case 'colorless':
+          this.colorless = true;
+          // eslint-disable-next-line no-fallthrough
         default:
           this.black = [];
           this.white = [];
@@ -235,6 +242,13 @@ export default {
       });
     },
     isLastMove(row, cell) {
+      if (this.blind) {
+        return (row === this.black[this.black.length - 1].row
+          && cell === this.black[this.black.length - 1].cell)
+          || (row === this.white[this.white.length - 1].row
+            && cell === this.white[this.white.length - 1].cell);
+      }
+
       if (this.isBlacksMove) {
         return row === this.white[this.white.length - 1].row
           && cell === this.white[this.white.length - 1].cell;
@@ -254,6 +268,9 @@ export default {
     });
     eventBus.$on('toggle-coords', () => {
       this.showCoords = !this.showCoords;
+    });
+    eventBus.$on('toggle-blind', () => {
+      this.blind = !this.blind;
     });
     eventBus.$on('revert', this.revert);
   }
