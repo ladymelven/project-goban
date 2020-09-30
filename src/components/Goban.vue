@@ -1,22 +1,33 @@
 <template>
-  <div class="container justify-content-center">
-    <h2 class="h2 w-100 text-center">Ход {{ isBlacksMove ? 'черных' : 'белых' }}</h2>
-    <p class="w-100 text-center">
-      Пленники: ⚫{{ this.captives.black }} ⚪{{ this.captives.white }}
-    </p>
-    <div class="my-3 row justify-content-center">
-      <div class="d-flex w-auto" v-for="row of 19" :key="row">
-        <goban-cell
-          v-for="cell of 19"
-          :move="isBlacksMove"
-          :row="row"
-          :cell="cell"
-          :stone="hasStone(row, cell)"
-          :key="row + cell"
-          @stone="placeStone"></goban-cell>
+    <div class="col col-12 col-lg-7 justify-content-center mb-3">
+      <div class="container container-fluid goban">
+        <div v-if="showCoords" class="d-flex justify-content-center">
+          <div
+            v-for="item of 19"
+            class="legend__item d-none d-md-block"
+            :key="item">{{ item }}</div>
+        </div>
+        <div class="d-flex justify-content-center" v-for="row of 19" :key="row">
+          <div v-if="showCoords" class="legend__item d-none d-md-block">{{ row }}</div>
+          <goban-cell
+            v-for="cell of 19"
+            :move="isBlacksMove"
+            :row="row"
+            :cell="cell"
+            :stone="hasStone(row, cell)"
+            :last="hasStone(row, cell) && isLastMove(row, cell)"
+            :key="row + cell"
+            @stone="placeStone"></goban-cell>
+          <div v-if="showCoords" class="legend__item d-none d-md-block">{{ row }}</div>
+        </div>
+        <div v-if="showCoords" class="d-flex justify-content-center">
+          <div
+            v-for="item of 19"
+            class="legend__item d-none d-md-block"
+            :key="item">{{ item }}</div>
+        </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -31,6 +42,8 @@ export default {
   },
   data() {
     return {
+      publicPath: process.env.BASE_URL,
+      showCoords: true,
       isBlacksMove: true,
       black: [],
       white: [],
@@ -48,6 +61,8 @@ export default {
       this.white = [];
       this.captives.black = 0;
       this.captives.white = 0;
+      eventBus.$emit('captives-change', 'black', this.captives.black);
+      eventBus.$emit('captives-change', 'white', this.captives.white);
       this.isBlacksMove = true;
       this.currentGroup = [];
       this.log = [];
@@ -77,8 +92,11 @@ export default {
         this.black = [...this.log[this.log.length - 1].black];
         this.white = [...this.log[this.log.length - 1].white];
         this.captives = { ...this.log[this.log.length - 1].captives };
+        eventBus.$emit('captives-change', 'black', this.captives.black);
+        eventBus.$emit('captives-change', 'white', this.captives.white);
         return;
       }
+      this.playStoneSound();
       // give the turn to the opponent
       this.log.push({
         black: [...this.black],
@@ -139,6 +157,7 @@ export default {
           && item.cell === stone.cell));
         this[color].splice(indexToRemove, 1);
         this.captives[opponentColor] += 1;
+        eventBus.$emit('captives-change', opponentColor, this.captives[opponentColor]);
       });
     },
     isKo() {
@@ -173,6 +192,8 @@ export default {
         this.captives.white = 0;
         this.captives.black = 0;
       }
+      eventBus.$emit('captives-change', 'black', this.captives.black);
+      eventBus.$emit('captives-change', 'white', this.captives.white);
       this.log.pop();
       this.isBlacksMove = !this.isBlacksMove;
     },
@@ -205,11 +226,25 @@ export default {
       }
       this.captives.white = 0;
       this.captives.black = 0;
+      eventBus.$emit('captives-change', 'black', this.captives.black);
+      eventBus.$emit('captives-change', 'white', this.captives.white);
       this.log.push({
         black: [...this.black],
         white: [...this.white],
         captives: { ...this.captives }
       });
+    },
+    isLastMove(row, cell) {
+      if (this.isBlacksMove) {
+        return row === this.white[this.white.length - 1].row
+          && cell === this.white[this.white.length - 1].cell;
+      }
+      return row === this.black[this.black.length - 1].row
+        && cell === this.black[this.black.length - 1].cell;
+    },
+    playStoneSound() {
+      const sound = new Audio(`${this.publicPath}stone.mp3`);
+      sound.play();
     }
   },
   created() {
@@ -217,10 +252,41 @@ export default {
     eventBus.$on('preset', variant => {
       this.setExercise(variant);
     });
+    eventBus.$on('toggle-coords', () => {
+      this.showCoords = !this.showCoords;
+    });
     eventBus.$on('revert', this.revert);
   }
 };
 </script>
 
 <style scoped>
+  .goban {
+    position: relative;
+    transform: scaleY(-1);
+  }
+  .legend__item {
+    display: none;
+    position: relative;
+    transform: scaleY(-1);
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+    font-weight: bold;
+  }
+
+  @media only screen and (min-width: 1200px) and (min-height: 700px) {
+    .legend__item {
+      width: 30px;
+      height: 30px;
+
+    }
+  }
+
+  @media only screen and (min-width: 1440px) {
+    .legend__item {
+      width: 35px;
+      height: 35px;
+    }
+  }
 </style>

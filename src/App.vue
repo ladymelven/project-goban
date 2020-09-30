@@ -1,7 +1,12 @@
 <template>
   <div id="app">
-    <app-goban></app-goban>
-    <app-controls></app-controls>
+    <div class="container justify-content-center">
+      <div class="row">
+        <app-goban></app-goban>
+        <app-controls></app-controls>
+      </div>
+
+    </div>
   </div>
 </template>
 
