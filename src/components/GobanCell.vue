@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'GobanCell.vue',
@@ -24,8 +25,7 @@ export default {
     cell: Number,
     stone: String,
     move: Boolean,
-    last: Boolean,
-    blind: Boolean
+    last: Boolean
   },
   data() {
     return {
@@ -47,6 +47,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['size', 'blind']),
     stoneClasses() {
       const lastClass = this.last && !this.blind ? 'last' : '';
       return ['stone', this.stone, lastClass];
@@ -56,23 +57,27 @@ export default {
     this.removePreview();
     if (this.row === 1) {
       this.classes.push('top');
-    } else if (this.row === 19) {
+    } else if (this.row === this.size) {
       this.classes.push('bottom');
     }
     if (this.cell === 1) {
       this.classes.push('left');
-    } else if (this.cell === 19) {
+    } else if (this.cell === this.size) {
       this.classes.push('right');
     }
     if ((this.row === 4 && this.cell === 4)
-      || (this.row === 4 && this.cell === 16)
-      || (this.row === 16 && this.cell === 4)
-      || (this.row === 16 && this.cell === 16)
-      || (this.row === 10 && this.cell === 10)
-      || (this.row === 10 && this.cell === 4)
-      || (this.row === 10 && this.cell === 16)
-      || (this.row === 4 && this.cell === 10)
-      || (this.row === 16 && this.cell === 10)) {
+      || (this.row === 4 && this.cell === this.size - 3)
+      || (this.row === this.size - 3 && this.cell === 4)
+      || (this.row === this.size - 3 && this.cell === this.size - 3)) {
+      this.star = true;
+    }
+    if (this.size >= 13 && (
+      (this.row === Math.ceil(this.size / 2) && this.cell === Math.ceil(this.size / 2))
+      || (this.row === Math.ceil(this.size / 2) && this.cell === 4)
+      || (this.row === Math.ceil(this.size / 2) && this.cell === this.size - 3)
+      || (this.row === 4 && this.cell === Math.ceil(this.size / 2))
+      || (this.row === this.size - 3 && this.cell === Math.ceil(this.size / 2))
+    )) {
       this.star = true;
     }
   }
