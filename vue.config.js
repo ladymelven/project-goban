@@ -8,7 +8,7 @@ module.exports = {
       .splitChunks(false);
     config
       .plugin('BundleTracker')
-      .use(BundleTracker, [{ filename: '../frontend/webpack-stats.json' }]);
+      .use(BundleTracker, [{ filename: '../project-goban/webpack-stats.json' }]);
     config.resolve.alias
       .set('__STATIC__', 'static');
     config.devServer
