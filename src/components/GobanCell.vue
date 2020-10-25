@@ -84,7 +84,9 @@ export default {
     width: calc(100vw / 19);
     height: calc(100vw / 19);
     position: relative;
-    background-color: bisque;
+    background-image: url('../assets/bg.jpg'), linear-gradient(bisque, bisque);
+    background-size: 100%;
+    background-blend-mode: soft-light;
     flex-shrink: 0;
   }
 

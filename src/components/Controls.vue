@@ -6,9 +6,9 @@
     </p>
     <div class="my-2 controls">
       <b-button-toolbar class="d-flex justify-content-start" aria-label="Меню гобана">
-        <b-button class="m-1" variant="info" @click="newGame">Новая игра</b-button>
-        <b-button class="m-1" variant="info" @click="revert">Вернуть ход</b-button>
-        <b-dropdown class="m-1" variant="info" right text="Выбрать пресет">
+        <b-button class="m-1" variant="dark" @click="newGame">Новая игра</b-button>
+        <b-button class="m-1" variant="dark" @click="revert">Вернуть ход</b-button>
+        <b-dropdown class="m-1" variant="dark" right text="Выбрать пресет">
           <b-dropdown-item @click="preset('atari')">Атари-го</b-dropdown-item>
           <b-dropdown-item @click="preset('corner')">Выживание в углу</b-dropdown-item>
           <b-dropdown-item @click="preset('full')">Выживание по всей доске</b-dropdown-item>
