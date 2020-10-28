@@ -1,14 +1,14 @@
 const BundleTracker = require('webpack-bundle-tracker');
 
 module.exports = {
-  baseUrl: 'http://127.0.0.1:8000/',
+//  baseUrl: 'http://127.0.0.1:8000/',
   outputDir: './dist/',
   chainWebpack: config => {
     config.optimization
       .splitChunks(false);
     config
       .plugin('BundleTracker')
-      .use(BundleTracker, [{ filename: '../project-goban/webpack-stats.json' }]);
+      .use(BundleTracker, [{ filename: '..project-goban/webpack-stats.json' }]);
     config.resolve.alias
       .set('__STATIC__', 'static');
     config.devServer
