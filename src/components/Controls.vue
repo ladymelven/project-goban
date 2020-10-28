@@ -26,7 +26,7 @@
         </b-form-checkbox>
         <b-form-checkbox
           class="m-1 d-none d-md-block"
-          v-model="isBlind"
+          v-model="blind"
           @change="toggleBlind"
           name="check-button"
           size="lg"
@@ -39,19 +39,12 @@
 </template>
 
 <script>
-import eventBus from '../event-bus';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'Controls',
-  data() {
-    return {
-      showCoords: true,
-      isBlind: false,
-      captives: {
-        black: 0,
-        white: 0,
-      }
-    };
+  computed: {
+    ...mapGetters(['showCoords', 'blind', 'captives'])
   },
   methods: {
     newGame() {
@@ -67,7 +60,7 @@ export default {
         })
           .then(confirmation => {
             if (confirmation) {
-              eventBus.$emit('new-game');
+              this.$store.dispatch('resetGame');
               resolve(true);
             }
             resolve(false);
@@ -75,27 +68,22 @@ export default {
       });
     },
     revert() {
-      eventBus.$emit('revert');
+      this.$store.dispatch('revertMove');
     },
     preset(variant) {
       this.newGame()
         .then(confirm => {
           if (confirm) {
-            eventBus.$emit('preset', variant);
+            this.$store.dispatch('setPresets', variant);
           }
         });
     },
     toggleCoords() {
-      eventBus.$emit('toggle-coords');
+      this.$store.dispatch('toggleCoords');
     },
     toggleBlind() {
-      eventBus.$emit('toggle-blind');
+      this.$store.dispatch('toggleBlind');
     }
-  },
-  created() {
-    eventBus.$on('captives-change', (color, newNumber) => {
-      this.captives[color] = newNumber;
-    });
   }
 };
 

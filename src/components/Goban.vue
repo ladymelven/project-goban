@@ -3,14 +3,14 @@
       <div class="container container-fluid goban">
         <div v-if="showCoords" class="d-flex justify-content-center">
           <div
-            v-for="item of 19"
+            v-for="item of size"
             class="legend__item d-none d-md-block"
             :key="item">{{ item }}</div>
         </div>
-        <div class="d-flex justify-content-center" v-for="row of 19" :key="row">
+        <div class="d-flex justify-content-center" v-for="row of size" :key="row">
           <div v-if="showCoords" class="legend__item d-none d-md-block">{{ row }}</div>
           <goban-cell
-            v-for="cell of 19"
+            v-for="cell of size"
             :move="isBlacksMove"
             :row="row"
             :cell="cell"
@@ -18,12 +18,13 @@
             :stone="hasStone(row, cell)"
             :last="hasStone(row, cell) && isLastMove(row, cell)"
             :key="row + cell"
+            :size="size"
             @stone="placeStone"></goban-cell>
           <div v-if="showCoords" class="legend__item d-none d-md-block">{{ row }}</div>
         </div>
         <div v-if="showCoords" class="d-flex justify-content-center">
           <div
-            v-for="item of 19"
+            v-for="item of size"
             class="legend__item d-none d-md-block"
             :key="item">{{ item }}</div>
         </div>
@@ -33,8 +34,9 @@
 
 <script>
 import presets from '@/presets';
+import { mapGetters } from 'vuex';
+import { NEW_GAME, REVERT_MOVE, SET_PRESETS } from '@/store/constants';
 import GobanCell from './GobanCell.vue';
-import eventBus from '../event-bus';
 
 export default {
   name: 'Goban.vue',
@@ -44,30 +46,19 @@ export default {
   data() {
     return {
       publicPath: process.env.BASE_URL,
-      showCoords: true,
-      colorless: false,
-      blind: false,
-      isBlacksMove: true,
       black: [],
       white: [],
-      captives: {
-        black: 0,
-        white: 0
-      },
       currentGroup: [],
       log: []
     };
+  },
+  computed: {
+    ...mapGetters(['size', 'isBlacksMove', 'showCoords', 'blind', 'colorless', 'captives'])
   },
   methods: {
     newGame() {
       this.black = [];
       this.white = [];
-      this.captives.black = 0;
-      this.captives.white = 0;
-      eventBus.$emit('captives-change', 'black', this.captives.black);
-      eventBus.$emit('captives-change', 'white', this.captives.white);
-      this.isBlacksMove = true;
-      this.colorless = false;
       this.currentGroup = [];
       this.log = [];
     },
@@ -93,11 +84,12 @@ export default {
       }
       // if the move is prohibited by ko rule, we revert it
       if (this.log.length > 6 && this.isKo()) {
+        this.$store.dispatch('changeCaptives',
+          { color: 'black', number: this.log[this.log.length - 1].captives.black });
+        this.$store.dispatch('changeCaptives',
+          { color: 'white', number: this.log[this.log.length - 1].captives.black });
         this.black = [...this.log[this.log.length - 1].black];
         this.white = [...this.log[this.log.length - 1].white];
-        this.captives = { ...this.log[this.log.length - 1].captives };
-        eventBus.$emit('captives-change', 'black', this.captives.black);
-        eventBus.$emit('captives-change', 'white', this.captives.white);
         return;
       }
       this.playStoneSound();
@@ -107,7 +99,7 @@ export default {
         white: [...this.white],
         captives: { ...this.captives }
       });
-      this.isBlacksMove = !this.isBlacksMove;
+      this.$store.dispatch('switchMove');
     },
     hasBlackStone(row, cell) {
       return !!this.black
@@ -124,7 +116,7 @@ export default {
       if (this.hasBlackStone(row, cell)) {
         return this.colorless ? 'white' : 'black';
       }
-      if (row > 19 || row < 1 || cell > 19 || cell < 1) {
+      if (row > this.size || row < 1 || cell > this.size || cell < 1) {
         return 'edge';
       }
       return null;
@@ -160,8 +152,10 @@ export default {
         const indexToRemove = this[color].findIndex(item => (item.row === stone.row
           && item.cell === stone.cell));
         this[color].splice(indexToRemove, 1);
-        this.captives[opponentColor] += 1;
-        eventBus.$emit('captives-change', opponentColor, this.captives[opponentColor]);
+        this.$store.dispatch('changeCaptives', {
+          color: opponentColor,
+          number: this.captives[opponentColor] + 1,
+        });
       });
     },
     isKo() {
@@ -189,17 +183,17 @@ export default {
       if (this.log.length > 1) {
         this.black = [...this.log[this.log.length - 2].black];
         this.white = [...this.log[this.log.length - 2].white];
-        this.captives = { ...this.log[this.log.length - 2].captives };
+        this.$store.dispatch('changeCaptives',
+          { color: 'black', number: this.log[this.log.length - 2].captives.black });
+        this.$store.dispatch('changeCaptives',
+          { color: 'white', number: this.log[this.log.length - 2].captives.white });
       } else {
         this.black = [];
         this.white = [];
-        this.captives.white = 0;
-        this.captives.black = 0;
+        this.$store.dispatch('changeCaptives', { color: 'black', number: 0 });
+        this.$store.dispatch('changeCaptives', { color: 'white', number: 0 });
       }
-      eventBus.$emit('captives-change', 'black', this.captives.black);
-      eventBus.$emit('captives-change', 'white', this.captives.white);
       this.log.pop();
-      this.isBlacksMove = !this.isBlacksMove;
     },
     setExercise(variant) {
       if (this.log.length || this.black.length || this.white.length) { return; }
@@ -212,29 +206,27 @@ export default {
         case 'corner':
           this.black = [...presets.corner.black];
           this.white = [];
-          this.isBlacksMove = false;
+          this.$store.dispatch('whiteFirst');
           break;
         case 'center':
           this.black = [...presets.center.black];
           this.white = [];
-          this.isBlacksMove = false;
+          this.$store.dispatch('whiteFirst');
           break;
         case 'full':
           this.black = [...presets.full.black];
           this.white = [];
-          this.isBlacksMove = false;
+          this.$store.dispatch('whiteFirst');
           break;
         case 'colorless':
-          this.colorless = true;
+          this.$store.dispatch('toggleColorless');
           // eslint-disable-next-line no-fallthrough
         default:
           this.black = [];
           this.white = [];
       }
-      this.captives.white = 0;
-      this.captives.black = 0;
-      eventBus.$emit('captives-change', 'black', this.captives.black);
-      eventBus.$emit('captives-change', 'white', this.captives.white);
+      this.$store.dispatch('changeCaptives', { color: 'black', number: 0 });
+      this.$store.dispatch('changeCaptives', { color: 'white', number: 0 });
       this.log.push({
         black: [...this.black],
         white: [...this.white],
@@ -262,17 +254,22 @@ export default {
     }
   },
   created() {
-    eventBus.$on('new-game', this.newGame);
-    eventBus.$on('preset', variant => {
-      this.setExercise(variant);
+    this.$store.subscribe(mutation => {
+      console.log(mutation.type);
+      // eslint-disable-next-line default-case
+      switch (mutation.type) {
+        case NEW_GAME:
+          console.log('new game');
+          this.newGame();
+          break;
+        case REVERT_MOVE:
+          this.revert();
+          break;
+        case SET_PRESETS:
+          this.setExercise(mutation.payload);
+          break;
+      }
     });
-    eventBus.$on('toggle-coords', () => {
-      this.showCoords = !this.showCoords;
-    });
-    eventBus.$on('toggle-blind', () => {
-      this.blind = !this.blind;
-    });
-    eventBus.$on('revert', this.revert);
   }
 };
 </script>
