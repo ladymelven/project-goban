@@ -255,11 +255,9 @@ export default {
   },
   created() {
     this.$store.subscribe(mutation => {
-      console.log(mutation.type);
       // eslint-disable-next-line default-case
       switch (mutation.type) {
         case NEW_GAME:
-          console.log('new game');
           this.newGame();
           break;
         case REVERT_MOVE:
