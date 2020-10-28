@@ -2,12 +2,13 @@ const BundleTracker = require('webpack-bundle-tracker');
 
 module.exports = {
   outputDir: './dist/',
+  filenameHashing: true,
   chainWebpack: config => {
     config.optimization
       .splitChunks(false);
     config
       .plugin('BundleTracker')
-      .use(BundleTracker, [{ filename: '..project-goban/webpack-stats.json' }]);
+      .use(BundleTracker, [{ filename: '../project-goban/webpack-stats.json' }]);
     config.resolve.alias
       .set('__STATIC__', 'static');
     config.devServer
