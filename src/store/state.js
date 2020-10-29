@@ -12,5 +12,6 @@ export default {
   names: {
     black: '',
     white: ''
-  }
+  },
+  currName: ''
 };

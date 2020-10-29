@@ -8,6 +8,7 @@
       <b-button-toolbar class="d-flex justify-content-start" aria-label="Меню гобана">
         <b-button class="m-1" variant="dark" @click="newGame">Новая игра</b-button>
         <b-button class="m-1" variant="dark" @click="revert">Вернуть ход</b-button>
+        <b-button class="m-1" variant="dark" @click="changeName">Поменять ник</b-button>
         <b-dropdown class="m-1" variant="dark" right text="Выбрать пресет">
           <b-dropdown-item @click="preset('atari')">Атари-го</b-dropdown-item>
           <b-dropdown-item @click="preset('corner')">Выживание в углу</b-dropdown-item>
@@ -34,6 +35,18 @@
           Игра вслепую
         </b-form-checkbox>
       </b-button-toolbar>
+      <div>
+        Черный: {{ names.black || 'свободно' }}
+        <b-button class="m-1" variant="dark" @click="toggleSeat('black')">
+          {{ names.black ? 'Покинуть место' : 'Занять место' }}
+        </b-button>
+      </div>
+      <div>
+        Белый: {{ names.white || 'свободно' }}
+        <b-button class="m-1" variant="light" @click="toggleSeat('white')">
+          {{ names.white ? 'Покинуть место' : 'Занять место' }}
+        </b-button>
+      </div>
     </div>
   </div>
 </template>
@@ -44,7 +57,7 @@ import { mapGetters } from 'vuex';
 export default {
   name: 'Controls',
   computed: {
-    ...mapGetters(['showCoords', 'blind', 'captives'])
+    ...mapGetters(['showCoords', 'blind', 'captives', 'currName', 'names'])
   },
   methods: {
     newGame() {
@@ -70,6 +83,9 @@ export default {
     revert() {
       this.$store.dispatch('revertMove');
     },
+    changeName() {
+      this.$bvModal.show('welcome-modal');
+    },
     preset(variant) {
       this.newGame()
         .then(confirm => {
@@ -83,6 +99,15 @@ export default {
     },
     toggleBlind() {
       this.$store.dispatch('toggleBlind');
+    },
+    toggleSeat(color) {
+      let name = 'Неопознанная антилопа';
+      if (this.currName) {
+        name = this.currName;
+      } else {
+        this.$store.dispatch('changeName', name);
+      }
+      this.$store.dispatch('toggleSeat', { color, name });
     }
   }
 };

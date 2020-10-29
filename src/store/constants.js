@@ -9,3 +9,4 @@ export const CHANGE_CAPTIVES = 'CHANGE_CAPTIVES';
 export const CHANGE_NAME = 'CHANGE_NAME';
 export const WHITE_FIRST = 'WHITE_FIRST';
 export const TOGGLE_COORDS = 'TOGGLE_COORDS';
+export const TOGGLE_SEAT = 'TOGGLE_SEAT';

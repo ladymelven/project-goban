@@ -53,7 +53,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['size', 'isBlacksMove', 'showCoords', 'blind', 'colorless', 'captives'])
+    ...mapGetters(['size', 'isBlacksMove', 'showCoords', 'blind', 'colorless', 'captives', 'allowedToPlay'])
   },
   methods: {
     newGame() {
@@ -64,6 +64,7 @@ export default {
     },
     placeStone(row, cell) {
       if (this.hasStone(row, cell)) { return; }
+      if (!this.allowedToPlay) { return; }
 
       const color = this.isBlacksMove ? 'black' : 'white';
       const opponentColor = this.isBlacksMove ? 'white' : 'black';

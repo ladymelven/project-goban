@@ -31,7 +31,10 @@ export default {
   changeCaptives({ commit }, payload) {
     commit(actions.CHANGE_CAPTIVES, payload);
   },
-  changeName({ commit }, payload) {
-    commit(actions.CHANGE_NAME, payload);
+  changeName({ commit }, name) {
+    commit(actions.CHANGE_NAME, name);
+  },
+  toggleSeat({ commit }, payload) {
+    commit(actions.TOGGLE_SEAT, payload);
   }
 };

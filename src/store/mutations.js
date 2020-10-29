@@ -9,7 +9,8 @@ import {
   WHITE_FIRST,
   TOGGLE_COORDS,
   SET_PRESETS,
-  REVERT_MOVE
+  REVERT_MOVE,
+  TOGGLE_SEAT
 } from './constants';
 
 export default {
@@ -37,8 +38,8 @@ export default {
   [CHANGE_SIZE](state, newSize) {
     state.size = newSize;
   },
-  [CHANGE_NAME](state, payload) {
-    state.names[payload.color] = payload.newName;
+  [CHANGE_NAME](state, name) {
+    state.currName = name;
   },
   [CHANGE_CAPTIVES](state, payload) {
     state.captives[payload.color] = payload.number;
@@ -51,5 +52,8 @@ export default {
   },
   [TOGGLE_COORDS](state) {
     state.showCoords = !state.showCoords;
+  },
+  [TOGGLE_SEAT](state, payload) {
+    state.names[payload.color] = state.names[payload.color] ? '' : payload.name;
   }
 };

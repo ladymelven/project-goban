@@ -24,7 +24,6 @@ export default {
     row: Number,
     cell: Number,
     stone: String,
-    move: Boolean,
     last: Boolean
   },
   data() {
@@ -40,14 +39,16 @@ export default {
       this.removePreview();
     },
     addPreview() {
-      this.previewClass = this.move ? 'preview_black' : 'preview_white';
+      if (this.allowedToPlay) {
+        this.previewClass = this.isBlacksMove ? 'preview_black' : 'preview_white';
+      }
     },
     removePreview() {
       this.previewClass = '';
     }
   },
   computed: {
-    ...mapGetters(['size', 'blind']),
+    ...mapGetters(['size', 'blind', 'isBlacksMove', 'allowedToPlay']),
     stoneClasses() {
       const lastClass = this.last && !this.blind ? 'last' : '';
       return ['stone', this.stone, lastClass];
