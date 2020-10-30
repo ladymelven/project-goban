@@ -1,6 +1,6 @@
 module.exports = {
-  outputDir: '../goban/static/goban/dist',
-  indexPath: '../../templates/base-vue.html',
+  outputDir: '../goban/static/goban/',
+  indexPath: '../../templates/goban/base-vue.html',
 
   chainWebpack: config => {
     config.devServer
@@ -10,6 +10,6 @@ module.exports = {
       .writeToDisk(filePath => filePath.endsWith('index.html'));
   },
   publicPath: process.env.NODE_ENV === 'production'
-    ? '/project-goban/'
+    ? '/static/goban/'
     : '/'
 };
