@@ -114,8 +114,9 @@ export default {
   .cell::before {
     content: '';
     width: 100%;
-    height: 1px;
-    background-color: #333;
+    height: 0;
+    border-bottom: 1px solid #333;
+    //background-color: #333;
     position: absolute;
     top: 50%;
     left: 0;
@@ -133,9 +134,10 @@ export default {
 
   .cell::after {
     content: '';
-    width: 1px;
+    width: 0;
+    border-left: 1px solid #333;
     height: 100%;
-    background-color: #333;
+    //background-color: #333;
     position: absolute;
     top: 0;
     left: 50%;

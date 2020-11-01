@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import socket from '@/socket';
 import presets from '@/presets';
 import { mapGetters } from 'vuex';
 import { NEW_GAME, REVERT_MOVE, SET_PRESETS } from '@/store/constants';
@@ -101,6 +102,7 @@ export default {
         captives: { ...this.captives }
       });
       this.$store.dispatch('switchMove');
+      socket.sendMove(color, { row, cell });
     },
     hasBlackStone(row, cell) {
       return !!this.black
@@ -195,6 +197,7 @@ export default {
         this.$store.dispatch('changeCaptives', { color: 'white', number: 0 });
       }
       this.log.pop();
+      socket.requestRevert();
     },
     setExercise(variant) {
       if (this.log.length || this.black.length || this.white.length) { return; }

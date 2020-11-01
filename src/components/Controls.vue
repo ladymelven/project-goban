@@ -36,13 +36,13 @@
         </b-form-checkbox>
       </b-button-toolbar>
       <div>
-        Черный: {{ names.black || 'свободно' }}
+        Черный: {{ names.black || 'свободно' }} {{ names.black === currName ? '(Вы)' : '' }}
         <b-button class="m-1" variant="dark" @click="toggleSeat('black')">
           {{ names.black ? 'Покинуть место' : 'Занять место' }}
         </b-button>
       </div>
       <div>
-        Белый: {{ names.white || 'свободно' }}
+        Белый: {{ names.white || 'свободно' }} {{ names.black === currName ? '(Вы)' : '' }}
         <b-button class="m-1" variant="light" @click="toggleSeat('white')">
           {{ names.white ? 'Покинуть место' : 'Занять место' }}
         </b-button>
@@ -52,6 +52,7 @@
 </template>
 
 <script>
+import socket from '@/socket';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -101,13 +102,14 @@ export default {
       this.$store.dispatch('toggleBlind');
     },
     toggleSeat(color) {
-      let name = 'Неопознанная антилопа';
+      let name = 'sai';
       if (this.currName) {
         name = this.currName;
       } else {
         this.$store.dispatch('changeName', name);
       }
       this.$store.dispatch('toggleSeat', { color, name });
+      socket.sendSeat(color);
     }
   }
 };

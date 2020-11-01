@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import socket from '@/socket';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -27,6 +28,7 @@ export default {
         this.$store.dispatch('toggleSeat', { color: 'white', name: this.value });
       }
       this.$store.dispatch('changeName', this.value);
+      socket.sendName(this.value);
       this.$bvModal.hide('welcome-modal');
     }
   },
