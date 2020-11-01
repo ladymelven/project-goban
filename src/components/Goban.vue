@@ -11,14 +11,11 @@
           <div v-if="showCoords" class="legend__item d-none d-md-block">{{ row }}</div>
           <goban-cell
             v-for="cell of size"
-            :move="isBlacksMove"
             :row="row"
             :cell="cell"
-            :blind="blind"
             :stone="hasStone(row, cell)"
             :last="hasStone(row, cell) && isLastMove(row, cell)"
             :key="row + cell"
-            :size="size"
             @stone="placeStone"></goban-cell>
           <div v-if="showCoords" class="legend__item d-none d-md-block">{{ row }}</div>
         </div>
@@ -35,6 +32,7 @@
 <script>
 import socket from '@/socket';
 import presets from '@/presets';
+import handicap from '@/handicap';
 import { mapGetters } from 'vuex';
 import { NEW_GAME, REVERT_MOVE, SET_PRESETS } from '@/store/constants';
 import GobanCell from './GobanCell.vue';
@@ -201,33 +199,38 @@ export default {
     },
     setExercise(variant) {
       if (this.log.length || this.black.length || this.white.length) { return; }
-
-      switch (variant) {
-        case 'atari':
-          this.black = [...presets.atari.black];
-          this.white = [...presets.atari.white];
-          break;
-        case 'corner':
-          this.black = [...presets.corner.black];
-          this.white = [];
-          this.$store.dispatch('whiteFirst');
-          break;
-        case 'center':
-          this.black = [...presets.center.black];
-          this.white = [];
-          this.$store.dispatch('whiteFirst');
-          break;
-        case 'full':
-          this.black = [...presets.full.black];
-          this.white = [];
-          this.$store.dispatch('whiteFirst');
-          break;
-        case 'colorless':
-          this.$store.dispatch('toggleColorless');
+      if (typeof variant === 'number') {
+        this.black = [...handicap[this.size][variant]];
+        this.white = [];
+        this.$store.dispatch('whiteFirst');
+      } else if (typeof variant === 'string') {
+        switch (variant) {
+          case 'atari':
+            this.black = [...presets.atari.black];
+            this.white = [...presets.atari.white];
+            break;
+          case 'corner':
+            this.black = [...presets.corner.black];
+            this.white = [];
+            this.$store.dispatch('whiteFirst');
+            break;
+          case 'center':
+            this.black = [...presets.center.black];
+            this.white = [];
+            this.$store.dispatch('whiteFirst');
+            break;
+          case 'full':
+            this.black = [...presets.full.black];
+            this.white = [];
+            this.$store.dispatch('whiteFirst');
+            break;
+          case 'colorless':
+            this.$store.dispatch('toggleColorless');
           // eslint-disable-next-line no-fallthrough
-        default:
-          this.black = [];
-          this.white = [];
+          default:
+            this.black = [];
+            this.white = [];
+        }
       }
       this.$store.dispatch('changeCaptives', { color: 'black', number: 0 });
       this.$store.dispatch('changeCaptives', { color: 'white', number: 0 });
@@ -238,6 +241,7 @@ export default {
       });
     },
     isLastMove(row, cell) {
+      if (!this.log.length) { return false; }
       if (this.blind) {
         return (row === this.black[this.black.length - 1].row
           && cell === this.black[this.black.length - 1].cell)

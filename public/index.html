@@ -1,7 +1,8 @@
-{% extends "./base.html" %}
-{% block html %}
+<!--{% extends "./base.html" %}-->
+<!--{% block html %}-->
   <!DOCTYPE html>
-  <html lang="ru" {% block html_tag_attributes %}{{ block.super }}{% endblock %}>
+  <html lang="ru">
+        {% block html_tag_attributes %}{{ block.super }}{% endblock %}>
     <head>
       {% block head %}{{ block.super }}{% endblock %}
       <meta charset="utf-8">
@@ -11,8 +12,10 @@
       <link rel="icon" href="<%= BASE_URL %>favicon.ico">
       <title><%= htmlWebpackPlugin.options.title %></title>
     </head>
-    <body {% block body_tag_attributes %}{{ block.super }}{% endblock %}>
+    <body>
+      {% block body_tag_attributes %}{{ block.super }}{% endblock %}>
       {% block body %}{{ block.super }}{% endblock %}
+    <div id="app"></div>
     </body>
   </html>
 {% endblock %}

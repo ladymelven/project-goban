@@ -16,6 +16,16 @@
           <b-dropdown-item @click="preset('center')">Выживание в центре</b-dropdown-item>
           <b-dropdown-item @click="preset('colorless')">Одноцветное го</b-dropdown-item>
         </b-dropdown>
+        <b-dropdown class="m-1" variant="dark" right text="Выбрать фору">
+          <b-dropdown-item @click="handicap(2)">2</b-dropdown-item>
+          <b-dropdown-item @click="handicap(3)">3</b-dropdown-item>
+          <b-dropdown-item @click="handicap(4)">4</b-dropdown-item>
+          <b-dropdown-item @click="handicap(5)">5</b-dropdown-item>
+          <b-dropdown-item v-if="size === 19" @click="handicap(6)">6</b-dropdown-item>
+          <b-dropdown-item v-if="size === 19" @click="handicap(7)">7</b-dropdown-item>
+          <b-dropdown-item v-if="size === 19" @click="handicap(8)">8</b-dropdown-item>
+          <b-dropdown-item v-if="size === 19" @click="handicap(9)">9</b-dropdown-item>
+        </b-dropdown>
         <b-form-checkbox
           class="m-1 d-none d-md-block"
           v-model="showCoords"
@@ -58,7 +68,7 @@ import { mapGetters } from 'vuex';
 export default {
   name: 'Controls',
   computed: {
-    ...mapGetters(['showCoords', 'blind', 'captives', 'currName', 'names'])
+    ...mapGetters(['showCoords', 'blind', 'captives', 'currName', 'names', 'size'])
   },
   methods: {
     newGame() {
@@ -92,6 +102,14 @@ export default {
         .then(confirm => {
           if (confirm) {
             this.$store.dispatch('setPresets', variant);
+          }
+        });
+    },
+    handicap(handicap) {
+      this.newGame()
+        .then(confirm => {
+          if (confirm) {
+            this.$store.dispatch('setHandicap', handicap);
           }
         });
     },

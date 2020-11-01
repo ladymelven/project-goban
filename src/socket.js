@@ -1,6 +1,7 @@
 class Socket {
   constructor() {
-    this.socket = new WebSocket('wss://227.0.0.1');
+    this.socket = new WebSocket(`ws://${window.location.host}/${window.location.pathname}`);
+    console.log(`ws://${window.location.host}/${window.location.pathname}`);
     this.socket.onmessage = this.listen;
     this.socket.onopen = () => {
       console.log('connection ready');
