@@ -1,5 +1,5 @@
 export default {
-  size: 9,
+  size: 19,
   showCoords: true,
   preset: null,
   isBlacksMove: true,

@@ -7,9 +7,6 @@ export default {
   setPresets({ commit }, variant) {
     commit(actions.SET_PRESETS, variant);
   },
-  setHandicap({ commit }, handicap) {
-    commit(actions.SET_PRESETS, handicap);
-  },
   changeSize({ commit }, newSize) {
     commit(actions.CHANGE_SIZE, newSize);
   },

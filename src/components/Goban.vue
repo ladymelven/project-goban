@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import socket from '@/socket';
 import presets from '@/presets';
 import handicap from '@/handicap';
 import { mapGetters } from 'vuex';
@@ -39,6 +38,9 @@ import GobanCell from './GobanCell.vue';
 
 export default {
   name: 'Goban.vue',
+  props: {
+    socket: Object
+  },
   components: {
     'goban-cell': GobanCell
   },
@@ -100,7 +102,7 @@ export default {
         captives: { ...this.captives }
       });
       this.$store.dispatch('switchMove');
-      socket.sendMove(color, { row, cell });
+      this.socket.sendMove(color, { row, cell });
     },
     hasBlackStone(row, cell) {
       return !!this.black
@@ -195,7 +197,7 @@ export default {
         this.$store.dispatch('changeCaptives', { color: 'white', number: 0 });
       }
       this.log.pop();
-      socket.requestRevert();
+      this.socket.requestRevert();
     },
     setExercise(variant) {
       if (this.log.length || this.black.length || this.white.length) { return; }

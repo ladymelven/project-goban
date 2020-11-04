@@ -1,11 +1,11 @@
 class Socket {
-  constructor() {
-    this.socket = new WebSocket(`ws://${window.location.host}/${window.location.pathname}`);
+  constructor(callbacks) {
+    this.callbacks = callbacks;
+    this.socket = new WebSocket(`ws://${window.location.host}${window.location.pathname}`);
     console.log(`ws://${window.location.host}/${window.location.pathname}`);
     this.socket.onmessage = this.listen;
     this.socket.onopen = () => {
       console.log('connection ready');
-      this.sendName('sai');
     };
     this.socket.onclose = event => {
       if (!event.wasClean) {
@@ -19,6 +19,7 @@ class Socket {
   }
 
   sendMessage(message) {
+    console.log(message);
     this.socket.send(message);
   }
 
@@ -32,8 +33,8 @@ class Socket {
     this.sendMessage(message);
   }
 
-  sendSeat(color) {
-    const message = JSON.stringify({ action: 'seat', payload: { color } });
+  sendSeat(color, name) {
+    const message = JSON.stringify({ action: 'seat', payload: { color, name } });
     this.sendMessage(message);
   }
 
@@ -42,7 +43,7 @@ class Socket {
       action: 'move',
       payload: {
         color,
-        coords,
+        coords
       }
     });
     this.sendMessage(message);
@@ -62,7 +63,23 @@ class Socket {
   listen(event) {
     const message = event.data;
     console.log(message);
+    switch (message.action) {
+      case 'connection':
+        this.callbacks.setBoard(message.payload);
+        break;
+      case 'revert':
+        this.callbacks.askRevert();
+        break;
+      case 'confirm':
+        this.callbacks.confirmRevert();
+        break;
+      case 'move':
+        this.callbacks.move(message.payload.color, message.payload.coords);
+        break;
+      default:
+        console.log('Unknown action type');
+    }
   }
 }
 
-export default new Socket();
+export default Socket;
