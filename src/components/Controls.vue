@@ -127,8 +127,12 @@ export default {
       } else {
         this.$store.dispatch('changeName', name);
       }
+      if (this.names[color]) {
+        this.socket.leaveSeat(color);
+      } else {
+        this.socket.sendSeat(color, this.currName);
+      }
       this.$store.dispatch('toggleSeat', { color, name });
-      this.socket.sendSeat(color, this.currName);
     }
   }
 };

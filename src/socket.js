@@ -38,6 +38,11 @@ class Socket {
     this.sendMessage(message);
   }
 
+  leaveSeat(color) {
+    const message = JSON.stringify({ action: 'leave', payload: { color } });
+    this.sendMessage(message);
+  }
+
   sendMove(color, coords) {
     const message = JSON.stringify({
       action: 'move',
@@ -77,6 +82,10 @@ class Socket {
       case 'seat':
         console.log('setting seat');
         this.callbacks.setSeat(message.payload.color, message.payload.name);
+        break;
+      case 'leave':
+        console.log('left seat');
+        this.callbacks.clearSeat(message.payload.color);
         break;
       case 'move':
         console.log('setting board');

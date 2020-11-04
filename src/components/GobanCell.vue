@@ -4,7 +4,7 @@
     <div
       v-else
       class="preview"
-      :class="previewClass"
+      :class="[previewClass, ...edgeClasses]"
       @mouseenter="addPreview"
       @focus="addPreview"
       @touchstart="addPreview"
@@ -29,7 +29,6 @@ export default {
   data() {
     return {
       classes: ['cell'],
-      star: false,
       previewClass: ''
     };
   },
@@ -52,26 +51,30 @@ export default {
     stoneClasses() {
       const lastClass = this.last && !this.blind ? 'last' : '';
       return ['stone', this.stone, lastClass];
+    },
+    edgeClasses() {
+      const edgeClasses = [];
+      if (this.row === 1) {
+        edgeClasses.push('top');
+      } else if (this.row === this.size) {
+        edgeClasses.push('bottom');
+      }
+      if (this.cell === 1) {
+        edgeClasses.push('left');
+      } else if (this.cell === this.size) {
+        edgeClasses.push('right');
+      }
+      return edgeClasses;
+    },
+    star() {
+      return (this.row === 4 && this.cell === 4)
+        || (this.row === 4 && this.cell === this.size - 3)
+        || (this.row === this.size - 3 && this.cell === 4)
+        || (this.row === this.size - 3 && this.cell === this.size - 3);
     }
   },
   created() {
     this.removePreview();
-    if (this.row === 1) {
-      this.classes.push('top');
-    } else if (this.row === this.size) {
-      this.classes.push('bottom');
-    }
-    if (this.cell === 1) {
-      this.classes.push('left');
-    } else if (this.cell === this.size) {
-      this.classes.push('right');
-    }
-    if ((this.row === 4 && this.cell === 4)
-      || (this.row === 4 && this.cell === this.size - 3)
-      || (this.row === this.size - 3 && this.cell === 4)
-      || (this.row === this.size - 3 && this.cell === this.size - 3)) {
-      this.star = true;
-    }
     if (this.size >= 13 && (
       (this.row === Math.ceil(this.size / 2) && this.cell === Math.ceil(this.size / 2))
       || (this.row === Math.ceil(this.size / 2) && this.cell === 4)

@@ -14,7 +14,7 @@
 import Controls from '@/components/Controls.vue';
 import Goban from '@/components/Goban.vue';
 import Welcome from '@/components/Welcome.vue';
-import * as actions from '@/store/constants';
+import { mapGetters } from 'vuex';
 
 import Socket from '@/./socket';
 
@@ -30,6 +30,7 @@ export default {
       socket: new Socket({
         setSize: this.setSize,
         setSeat: this.setSeat,
+        clearSeat: this.clearSeat,
         setBoard: this.setBoard,
         askRevert: '',
         confirmRevert: '',
@@ -37,13 +38,24 @@ export default {
       })
     };
   },
+  computed: {
+    ...mapGetters(['names'])
+  },
   methods: {
     setSeat(color, name) {
-      const payload = { color, name };
-      this.$store.dispatch(actions.TOGGLE_SEAT, payload);
+      if (!this.names[color]) {
+        const payload = { color, name };
+        this.$store.dispatch('toggleSeat', payload);
+      }
+    },
+    clearSeat(color) {
+      if (this.names[color]) {
+        const payload = { color };
+        this.$store.dispatch('toggleSeat', payload);
+      }
     },
     setSize(size) {
-      this.$store.dispatch(actions.CHANGE_SIZE, size);
+      this.$store.dispatch('changeSize', size);
     },
     setBoard(condition) {
       this.setSize(condition.size);
@@ -51,9 +63,9 @@ export default {
       if (condition.players.white) { this.setSeat(condition.players.white); }
 
       if (condition.preset !== 'standard') {
-        this.$store.dispatch(actions.SET_PRESETS, condition.preset);
+        this.$store.dispatch('setPresets', condition.preset);
       } else if (condition.handicap > 0) {
-        this.$store.dispatch(actions.SET_PRESETS, condition.handicap);
+        this.$store.dispatch('setPresets', condition.handicap);
       }
       if (condition.log) {
         condition.log.forEach(move => {
