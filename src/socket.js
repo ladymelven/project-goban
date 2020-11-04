@@ -59,12 +59,13 @@ class Socket {
     this.sendMessage(message);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  listen(event) {
-    const message = event.data;
+  listen = event => {
+    const message = JSON.parse(event.data);
     console.log(message);
+    console.log(this.callbacks);
     switch (message.action) {
       case 'connection':
+        console.log('setting board');
         this.callbacks.setBoard(message.payload);
         break;
       case 'revert':
@@ -73,7 +74,12 @@ class Socket {
       case 'confirm':
         this.callbacks.confirmRevert();
         break;
+      case 'seat':
+        console.log('setting seat');
+        this.callbacks.setSeat(message.payload.color, message.payload.name);
+        break;
       case 'move':
+        console.log('setting board');
         this.callbacks.move(message.payload.color, message.payload.coords);
         break;
       default:

@@ -28,24 +28,14 @@ export default {
   data() {
     return {
       socket: new Socket({
-        setSize: this.changeSize,
-        setSeat: this.changeSeats,
+        setSize: this.setSize,
+        setSeat: this.setSeat,
         setBoard: this.setBoard,
         askRevert: '',
         confirmRevert: '',
-        move: ''
+        move: this.move
       })
     };
-  },
-  created() {
-    const callbacks = {
-      setBoard: this.setBoard,
-      askRevert: '',
-      confirmRevert: '',
-      move: ''
-    };
-    // eslint-disable-next-line no-new
-    new Socket(callbacks);
   },
   methods: {
     setSeat(color, name) {
