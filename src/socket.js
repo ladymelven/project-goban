@@ -77,7 +77,7 @@ class Socket {
         this.callbacks.move(message.payload.color, message.payload.coords);
         break;
       default:
-        console.log('Unknown action type');
+        console.log(`Unknown action type: ${message.action}`);
     }
   }
 }
