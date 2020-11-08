@@ -34,18 +34,22 @@ export default {
       if (this.value) {
         this.$store.dispatch('changeName', this.value);
         this.socket.sendName(this.value);
-      } else {
-        this.$store.dispatch('changeName', 'sai');
-        this.socket.sendName(this.value, 'sai');
+        document.cookie = `name=${this.value}`;
       }
-      console.log(this.value);
       this.$bvModal.hide('welcome-modal');
     }
   },
   mounted() {
-    if (!this.currName) {
-      this.$bvModal.show('welcome-modal');
-    }
+    // const nameRow = document.cookie
+    //   .split('; ')
+    //   .find(row => row.startsWith('name'));
+    // if (nameRow) {
+    //   const name = nameRow.split('=')[1];
+    //   this.$store.dispatch('changeName', name);
+    // } else {
+    //   this.$bvModal.show('welcome-modal');
+    // }
+    this.$bvModal.show('welcome-modal');
   }
 };
 

@@ -69,6 +69,7 @@ class Socket {
     switch (message.action) {
       case 'connection':
         console.log('setting board');
+        this.callbacks.setBoard(message.payload);
         break;
       case 'revert':
         this.callbacks.askRevert();

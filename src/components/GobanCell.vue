@@ -70,7 +70,8 @@ export default {
       return (this.row === 4 && this.cell === 4)
         || (this.row === 4 && this.cell === this.size - 3)
         || (this.row === this.size - 3 && this.cell === 4)
-        || (this.row === this.size - 3 && this.cell === this.size - 3);
+        || (this.row === this.size - 3 && this.cell === this.size - 3)
+        || (this.size > 9 && this.row === (this.size + 1) / 2 && this.cell === (this.size + 1) / 2);
     }
   },
   created() {

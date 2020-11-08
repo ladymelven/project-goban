@@ -58,9 +58,10 @@ export default {
       this.$store.dispatch('changeSize', size);
     },
     setBoard(condition) {
+      console.log(condition.players);
       this.setSize(condition.size);
-      if (condition.players.black) { this.setSeat(condition.players.black); }
-      if (condition.players.white) { this.setSeat(condition.players.white); }
+      if (condition.players.black) { this.setSeat('black', condition.players.black); }
+      if (condition.players.white) { this.setSeat('white', condition.players.white); }
 
       if (condition.preset !== 'standard') {
         this.$store.dispatch('setPresets', condition.preset);
