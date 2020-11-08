@@ -2,7 +2,6 @@ class Socket {
   constructor(callbacks) {
     this.callbacks = callbacks;
     this.socket = new WebSocket(`ws://${window.location.host}${window.location.pathname}`);
-    console.log(`ws://${window.location.host}/${window.location.pathname}`);
     this.socket.onmessage = this.listen;
     this.socket.onopen = () => {
       console.log('connection ready');
@@ -19,7 +18,7 @@ class Socket {
   }
 
   sendMessage(message) {
-    console.log(message);
+    console.log(`sending: ${message}`);
     this.socket.send(message);
   }
 
@@ -66,12 +65,10 @@ class Socket {
 
   listen = event => {
     const message = JSON.parse(event.data);
-    console.log(message);
-    console.log(this.callbacks);
+    console.log(`received message: ${event.data}`);
     switch (message.action) {
       case 'connection':
         console.log('setting board');
-        this.callbacks.setBoard(message.payload);
         break;
       case 'revert':
         this.callbacks.askRevert();
@@ -88,7 +85,7 @@ class Socket {
         this.callbacks.clearSeat(message.payload.color);
         break;
       case 'move':
-        console.log('setting board');
+        console.log('placing stone');
         this.callbacks.move(message.payload.color, message.payload.coords);
         break;
       default:

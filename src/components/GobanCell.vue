@@ -1,10 +1,10 @@
 <template>
-  <div :class="classes" @click="placeStone">
+  <div :class="[classes, ...edgeClasses]" @click="placeStone">
     <div v-if="stone && (!blind || last)" :class="stoneClasses"></div>
     <div
       v-else
       class="preview"
-      :class="[previewClass, ...edgeClasses]"
+      :class="[previewClass]"
       @mouseenter="addPreview"
       @focus="addPreview"
       @touchstart="addPreview"

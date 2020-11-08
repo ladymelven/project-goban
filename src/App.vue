@@ -39,7 +39,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['names'])
+    ...mapGetters(['names', 'isBlacksMove'])
   },
   methods: {
     setSeat(color, name) {
@@ -74,13 +74,10 @@ export default {
       }
     },
     move(color, coords) {
-      console.log(color, coords);
-      if ((color === 'black' && this.isBlacksMove) || (color === 'white' && !this.isBlacksMove)) {
-        this.$refs.goban.placeStone(coords.row, coords.cell);
-      } else {
+      if ((color === 'black' && !this.isBlacksMove) || (color === 'white' && this.isBlacksMove)) {
         this.$store.dispatch('switchMove');
-        this.$refs.goban.placeStone(coords.row, coords.cell);
       }
+      this.$refs.goban.placeStone(coords.row, coords.cell, true);
     }
   }
 };

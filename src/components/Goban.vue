@@ -63,9 +63,9 @@ export default {
       this.currentGroup = [];
       this.log = [];
     },
-    placeStone(row, cell) {
+    placeStone(row, cell, incoming = false) {
       if (this.hasStone(row, cell)) { return; }
-      if (!this.allowedToPlay) { return; }
+      if (!this.allowedToPlay && !incoming) { return; }
 
       const color = this.isBlacksMove ? 'black' : 'white';
       const opponentColor = this.isBlacksMove ? 'white' : 'black';
@@ -102,7 +102,9 @@ export default {
         captives: { ...this.captives }
       });
       this.$store.dispatch('switchMove');
-      this.socket.sendMove(color, { row, cell });
+      if (!incoming) {
+        this.socket.sendMove(color, { row, cell });
+      }
     },
     hasBlackStone(row, cell) {
       return !!this.black
